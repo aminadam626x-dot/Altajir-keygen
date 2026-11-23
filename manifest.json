@@ -10,17 +10,19 @@
   "lang": "ar",
   "icons": [
     {
-      "src": "./code_generator_icon.png",
+      "src": "./code_generator_icon_192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "./code_generator_icon.png",
+      "src": "./code_generator_icon_192x192.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ]
 }
+
+
 
