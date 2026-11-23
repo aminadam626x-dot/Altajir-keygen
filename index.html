@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1e3a5f" />
+  <title>مولّد أكواد التاجر الذكي</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f4f6f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      color: #1e293b;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      border: 1px solid #e2e8f0;
+    }
+    .badge {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      color: #1e3a5f;
+      text-align: center;
+    }
+    p.sub {
+      margin: 0 0 20px;
+      font-size: 13px;
+      color: #64748b;
+      text-align: center;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      outline: none;
+      margin-bottom: 14px;
+    }
+    input:focus { border-color: #1e3a5f; }
+    button.primary {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #1e3a5f;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button.primary:hover { background: #152a45; }
+    .result-box {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px dashed #94a3b8;
+      text-align: center;
+      display: none;
+    }
+    .code-display {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #0f766e;
+      margin: 8px 0 12px;
+      user-select: all;
+    }
+    button.copy-btn {
+      padding: 8px 16px;
+      border: 1px solid #0f766e;
+      background: #ffffff;
+      color: #0f766e;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .status {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #15803d;
+      min-height: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="text-align:center;"><span class="badge">تطبيق التوليد — التاجر الذكي</span></div>
+    <h1>مولّد أكواد التاجر الذكي</h1>
+    <p class="sub">إدخال معرّف الجهاز لإصدار كود التفعيل</p>
+
+    <label for="deviceId">معرّف الجهاز (Device ID)</label>
+    <input id="deviceId" type="text" placeholder="مثال: DEV-FCF1-34A4" value="DEV-FCF1-34A4" />
+
+    <button class="primary" onclick="handleGenerate()">توليد كود التفعيل</button>
+
+    <div class="result-box" id="resultBox">
+      <div style="font-size: 12px; color: #64748b;">كود التفعيل الناتج:</div>
+      <div class="code-display" id="codeOutput"></div>
+      <button class="copy-btn" onclick="copyCode()">نسخ الكود</button>
+      <div class="status" id="statusMsg"></div>
+    </div>
+  </div>
+
+  <script>
+    const SECRET_SALT = "ALTAJIR_SMART_KEY_2026";
+
+    function generateActivationCode(deviceId) {
+      const cleanId = (deviceId || "").trim().toUpperCase();
+      if (!cleanId) return "";
+
+      const input = cleanId + "|" + SECRET_SALT;
+      let hash = 2166136261;
+
+      for (let i = 0; i < input.length; i++) {
+        hash ^= input.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+
+      const unsigned = (hash >>> 0).toString(36).toUpperCase().padStart(8, "0").slice(-8);
+      return `TJR-${unsigned}`;
+    }
+
+    function handleGenerate() {
+      const raw = document.getElementById("deviceId").value;
+      const code = generateActivationCode(raw);
+      if (!code) {
+        alert("يرجى إدخال معرّف الجهاز أولاً");
+        return;
+      }
+      document.getElementById("codeOutput").textContent = code;
+      document.getElementById("resultBox").style.display = "block";
+      document.getElementById("statusMsg").textContent = "";
+    }
+
+    function copyCode() {
+      const code = document.getElementById("codeOutput").textContent;
+      if (!code) return;
+      navigator.clipboard?.writeText(code).then(() => {
+        document.getElementById("statusMsg").textContent = "تم نسخ الكود إلى الحافظة";
+      }).catch(() => {
+        document.getElementById("statusMsg").textContent = "حدّد الكود وانسخه يدوياً";
+      });
+    }
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
